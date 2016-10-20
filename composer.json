@@ -1,0 +1,16 @@
+{
+    "name": "chrl/incremental-backup",
+    "description": "A tool for creating incremental file-by-file backups",
+    "type": "project",
+    "require-dev": {
+        "phpunit/phpunit": "^5.6"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kirill Kholodilin",
+            "email": "charlie@chrl.ru"
+        }
+    ],
+    "require": {}
+}
