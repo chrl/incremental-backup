@@ -12,5 +12,11 @@
             "email": "charlie@chrl.ru"
         }
     ],
-    "require": {}
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Chrl\\": "src/Chrl"
+        }
+    }
+
 }

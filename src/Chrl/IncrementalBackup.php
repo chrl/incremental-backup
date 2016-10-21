@@ -18,53 +18,53 @@ class IncrementalBackup
      * @var int total lines count
      */
     public $totalCount = 0;
-	/**
-	 * @var int
-	 */
-	public $totalSkipped = 0;
+    /**
+     * @var int
+     */
+    public $totalSkipped = 0;
 
-	/**
- 	 * @var bool Output debug messages via echo
-	 */
-	public $debugOutput = true;
+    /**
+     * @var bool Output debug messages via echo
+     */
+    public $debugOutput = true;
 
-	/**
-	 * @var int
-	 */
-	protected $rotations = 0;
-	/**
-	 * @var int
-	 */
-	protected $cSign = 0;
-	/**
-	 * @var array
-	 */
-	protected $signs = ['  .','.  ',' . '];
-	/**
-	 * @var array
-	 */
-	protected $hashTable = [];
-	/**
-	 * @var string
-	 */
-	protected $primaryDir = '/';
+    /**
+     * @var int
+     */
+    protected $rotations = 0;
+    /**
+     * @var int
+     */
+    protected $cSign = 0;
+    /**
+     * @var array
+     */
+    protected $signs = ['  .','.  ',' . '];
+    /**
+     * @var array
+     */
+    protected $hashTable = [];
+    /**
+     * @var string
+     */
+    protected $primaryDir = '/';
 
 
-	/**
-	 * IncrementalBackup constructor.
-	 * @param string $primaryDir Primary directory, where operations are done
-	 */
-	public function __construct($primaryDir = '')
+    /**
+     * IncrementalBackup constructor.
+     * @param string $primaryDir Primary directory, where operations are done
+     */
+    public function __construct($primaryDir = '')
     {
         $this->primaryDir = $primaryDir;
-		return $this;
+        return $this;
     }
 
-	/**
-	 * @param $string
-	 * @return IncrementalBackup
-	 */
-	public function out($string)
+    /**
+     * @param $string
+     * @return IncrementalBackup
+     */
+    public function out($string)
     {
         if ($this->debugOutput) {
             echo $string;
@@ -72,10 +72,10 @@ class IncrementalBackup
         return $this;
     }
 
-	/**
-	 * @return string Current rotating sign
-	 */
-	public function getIncSign()
+    /**
+     * @return string Current rotating sign
+     */
+    public function getIncSign()
     {
         if ($this->rotations++ > 500) {
             $this->rotations = 0;
@@ -88,14 +88,14 @@ class IncrementalBackup
         return $this->signs[$this->cSign];
     }
 
-	/**
-	 * Scan directory and convert in into array
-	 *
-	 * @param string $directory Directory path to scan
-	 * @param bool $recursive Scan it recursively or not?
-	 * @return array
-	 */
-	public function directoryToArray($directory, $recursive)
+    /**
+     * Scan directory and convert in into array
+     *
+     * @param string $directory Directory path to scan
+     * @param bool $recursive Scan it recursively or not?
+     * @return array
+     */
+    public function directoryToArray($directory, $recursive)
     {
         $array_items = array();
         if ($handle = @opendir($directory)) {
@@ -128,29 +128,33 @@ class IncrementalBackup
         return $array_items;
     }
 
-	/**
-	 * Output debug message with rotating sign and from the start of the line
-	 *
-	 * @param string $string Message
-	 * @return IncrementalBackup
-	 */
-	public function oneStringDebug($string)
+    /**
+     * Output debug message with rotating sign and from the start of the line
+     *
+     * @param string $string Message
+     * @return IncrementalBackup
+     */
+    public function oneStringDebug($string)
     {
         $this->out("\r[".$this->getIncSign()."] ".$string);
         flush();
         return $this;
     }
 
-	/**
-	 * Scan directory and fill the hash table
-	 *
-	 * @param string $dir Directory to scan
-	 * @return IncrementalBackup
-	 */
-	public function dirScan($dir)
+    /**
+     * Scan directory and fill the hash table
+     *
+     * @param string $dir Directory to scan
+     * @return IncrementalBackup
+     */
+    public function dirScan($dir)
     {
 
         $this->primaryDir = $dir;
+        $this->totalCount = 0;
+        $this->totalSkipped = 0;
+
+        clearstatcache();
 
         $this->out('Scanning dir '.$dir."\n");
         $fileTable = $this->directoryToArray($dir, true);
@@ -169,13 +173,13 @@ class IncrementalBackup
         return $this;
     }
 
-	/**
-	 * Write hash table into file
-	 *
-	 * @param string $filename File to write
-	 * @return IncrementalBackup
-	 */
-	public function writeHashTable($filename = 'filehashes.list')
+    /**
+     * Write hash table into file
+     *
+     * @param string $filename File to write
+     * @return IncrementalBackup
+     */
+    public function writeHashTable($filename = 'filehashes.list')
     {
         $str = '';
         foreach ($this->hashTable as $line) {
@@ -185,23 +189,23 @@ class IncrementalBackup
         return $this;
     }
 
-	/**
-	 * Getter for hashtable
-	 *
-	 * @return array Hashtable
-	 */
-	public function getHashTable()
+    /**
+     * Getter for hashtable
+     *
+     * @return array Hashtable
+     */
+    public function getHashTable()
     {
         return $this->hashTable;
     }
 
-	/**
-	 * Load hashtable from file
-	 *
-	 * @param string $filename File to read
-	 * @return IncrementalBackup
-	 */
-	public function loadHashTable($filename)
+    /**
+     * Load hashtable from file
+     *
+     * @param string $filename File to read
+     * @return IncrementalBackup
+     */
+    public function loadHashTable($filename)
     {
         $file = file($filename);
         foreach ($file as $line) {
@@ -211,13 +215,13 @@ class IncrementalBackup
         return $this;
     }
 
-	/**
-	 * Compare hashtable of this object to hashtable of another object of this type and get the difference
-	 *
-	 * @param IncrementalBackup $ib
-	 * @return array Difference array
-	 */
-	public function compareWith(IncrementalBackup $ib)
+    /**
+     * Compare hashtable of this object to hashtable of another object of this type and get the difference
+     *
+     * @param IncrementalBackup $ib
+     * @return array Difference array
+     */
+    public function compareWith(IncrementalBackup $ib)
     {
         $diff = [
          'added'=>[],
@@ -261,14 +265,14 @@ class IncrementalBackup
         return $diff;
     }
 
-	/**
-	 * Apply diff, copying changed and added files to the second object
-	 *
-	 * @param string $prefix Prefix of files on the hashtable
-	 * @param array $diff Diff to apply
-	 * @return IncrementalBackup
-	 */
-	public function applyDiff($prefix, array $diff)
+    /**
+     * Apply diff, copying changed and added files to the second object
+     *
+     * @param string $prefix Prefix of files on the hashtable
+     * @param array $diff Diff to apply
+     * @return IncrementalBackup
+     */
+    public function applyDiff($prefix, array $diff)
     {
 
         $cpCount = count($diff['added']);
@@ -290,17 +294,17 @@ class IncrementalBackup
             $this->copyFile($line, $prefix, $this->primaryDir);
         }
         $this->out('Copied changed files: '.count($diff['changed'])."\n");
-		return $this;
+        return $this;
     }
 
-	/**
-	 * Copy a file to another location
-	 *
-	 * @param array $line line with metadata about file
-	 * @param string $prefix initial dir
-	 * @param string $toDir resulting dir
-	 */
-	public function copyFile(array $line, $prefix, $toDir)
+    /**
+     * Copy a file to another location
+     *
+     * @param array $line line with metadata about file
+     * @param string $prefix initial dir
+     * @param string $toDir resulting dir
+     */
+    public function copyFile(array $line, $prefix, $toDir)
     {
 
         $newName = str_replace($prefix, $toDir, $line[1]);
@@ -317,14 +321,14 @@ class IncrementalBackup
         }
     }
 
-	/**
-	 * Actually the main method -- start with it. It syncs main and backup dirs
-	 * @see examples
-	 *
-	 * @param $currentDir
-	 * @param string $backupDir
-	 */
-	public function syncDir($currentDir, $backupDir = '')
+    /**
+     * Actually the main method -- start with it. It syncs main and backup dirs
+     * @see examples
+     *
+     * @param $currentDir
+     * @param string $backupDir
+     */
+    public function syncDir($currentDir, $backupDir = '')
     {
 
         $this->dirScan($currentDir);
